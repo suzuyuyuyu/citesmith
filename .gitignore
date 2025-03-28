@@ -1,0 +1,23 @@
+*
+!*/
+!*.*
+*.exe
+
+# OS/Editor
+Thumb.db
+ehthumbs.db
+~$*
+Desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+Zone.Identifier
+*.swp
+._*
+*.~
+*.un
+*.bak
+__pycache__/
+
+*.mod
+*.o
