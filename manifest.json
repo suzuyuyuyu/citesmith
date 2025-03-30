@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Citer",
+  "version": "1.0",
+  "description": "Enables more efficient downloading/managing PDF references and pick up BibTeX",
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://www.sciencedirect.com/*"
+  ],
+  "action": {
+    "default_icon": "./fig/icon.png"
+  },
+  "icons": {
+    "16": "./fig/icon16.png",
+    "48": "./fig/icon48.png",
+    "96": "./fig/icon96.png",
+    "128": "./fig/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.sciencedirect.com/science/article/*",
+        "https://onlinelibrary.wiley.com/doi/*",
+        "https://link.springer.com/article/*",
+        "https://arxiv.org/abs/*"
+      ],
+      "js": [
+        "./BibTeXUtils.js",
+        "./content.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "./background.js"
+  }
+}
