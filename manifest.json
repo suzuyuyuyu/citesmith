@@ -1,24 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "Citer",
-  "version": "1.0",
-  "description": "Enables more efficient downloading/managing PDF references and pick up BibTeX",
+  "name": "Citesmith",
+  "version": "2025.0.0",
+  "description": "Enables more efficient downloading/managing PDF references and picking BibTeX references from various sites.",
   "permissions": [
     "activeTab",
     "downloads",
     "clipboardWrite"
   ],
   "host_permissions": [
-    "https://www.sciencedirect.com/*"
+    "https://www.sciencedirect.com/*",
+    "https://onlinelibrary.wiley.com/*",
+    "https://link.springer.com/*",
+    "https://arxiv.org/*"
   ],
   "action": {
-    "default_icon": "./fig/icon.png"
+    "default_icon": "./assets/fig/icon.png",
+    "default_popup": "./popup.html",
+    "default_title": "Citesmith"
   },
   "icons": {
-    "16": "./fig/icon16.png",
-    "48": "./fig/icon48.png",
-    "96": "./fig/icon96.png",
-    "128": "./fig/icon128.png"
+    "128": "./assets/fig/icon128.png"
   },
   "content_scripts": [
     {
@@ -29,11 +31,18 @@
         "https://arxiv.org/abs/*"
       ],
       "js": [
+        "./ris2bibtex.js",
         "./BibTeXUtils.js",
         "./content.js"
       ],
       "run_at": "document_end",
       "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/svg/*"],
+      "matches": ["<all_urls>"]
     }
   ],
   "background": {
