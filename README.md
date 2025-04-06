@@ -1,4 +1,6 @@
-# download manager
+<div style="display: flex; align-items: center; justify-content: center; margin: 0px; padding: 0px;">
+  <img src="./assets/svg/READMElogo.svg" width="100%" alt="Logo" style="margin-left: 3%;"/>
+</div>
 
 ## Description
 ScienceDirectなどの学術的なサイトからPDFをダウンロードするときに、ファイル名を適切に設定し、同時にBibTeXをクリップボードにコピーするためのツールです。
@@ -23,13 +25,14 @@ Chromeのサイトでは配布していませんので、適当なディレク�
     - [ ] DOI
     - [ ] Journal
     - [ ] Volume
-  - [ ] プレースホルダーの設定方法
-    - [ ] index.html (popup)
+  - [ ] プレースホルダーの設定方法: [Issue #2](https://github.com/suzuyuyuyu/ext-download-manager/issues/2)
+    - [ ] popup.html (popup)
     - [ ] chrome.storage.sync
 - [ ] Lists of supported sites
-  - [ ] ScienceDirect
+  - [x] ScienceDirect
   - [ ] Springer Nature
   - [ ] Wiley Online Library
   - [ ] arXiv
+- [ ] ris to bibtex: [Issue #1](https://github.com/suzuyuyuyu/ext-download-manager/issues/1)
 
 ## Contact

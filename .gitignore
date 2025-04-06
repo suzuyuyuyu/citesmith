@@ -8,10 +8,10 @@ Thumb.db
 ehthumbs.db
 ~$*
 Desktop.ini
-.DS_Store
+.DS_Store/
 .AppleDouble
 .LSOverride
-Zone.Identifier
+*Zone.Identifier
 *.swp
 ._*
 *.~
