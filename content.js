@@ -93,7 +93,7 @@ function createDownloadButton(whichSite) {
         var bibTexUrl = `https://www.sciencedirect.com/sdfe/arp/cite?pii=${pii}&format=text%2Fx-bibtex&withabstract=true`;
         var response = await fetch(bibTexUrl);
         var bibTeX = await response.text();
-      }else if (whichSite === 'springer') {
+      } else if (whichSite === 'springer') {
         var sanitizedUrl = currentUrl.split('#')[0];
         var pdfUrl = sanitizedUrl.replace('/article/', '/content/pdf/') + '.pdf';
         // fixme: debug mode. this requires ris2bibtex
@@ -114,11 +114,24 @@ function createDownloadButton(whichSite) {
         );
         await navigator.clipboard.writeText(bibTeXDoubleBrace);
 
-        // Download PDF
-        // BibTeXから情報を抽出
-        const downloadName = extractInfoFromBibTeX(bibTeX);
+        // ストレージから保存されたフォーマット設定を取得
+        const filenameFormat = await new Promise((resolve) => {
+          chrome.storage.sync.get(['filenameFormat'], function(result) {
+            if (result.filenameFormat) {
+              resolve(result.filenameFormat);
+            } else {
+              // デフォルト値
+              resolve('${firstAuthorLastNameCaps}${year}-${titleSnakeCase}');
+            }
+          });
+        });
 
-        console.log(pdfUrl);
+        // Download PDF
+        // BibTeXから情報を抽出（保存されたフォーマット設定を使用）
+        const downloadName = extractInfoFromBibTeX(bibTeX, filenameFormat);
+
+        console.log(`Using format: ${filenameFormat}`);
+        console.log(`Generated filename: ${downloadName}.pdf`);
 
         const downloadLink = document.createElement('a');
         downloadLink.href = pdfUrl;

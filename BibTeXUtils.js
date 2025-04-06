@@ -142,8 +142,7 @@ function extractInfoFromBibTeX(bibTeX, format = '${firstAuthorLastNameCaps}${yea
     };
 
     // const defaultFormat = '${firstAuthorLastNameCaps}${year}-${titleSnakeCase}';
-    const defaultFormat = format;
-    let result = defaultFormat;
+    let result = format;
     for (const [key, value] of Object.entries(values)) {
         result = result.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), value);
     }
