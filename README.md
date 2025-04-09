@@ -26,7 +26,7 @@ Chromeのサイトでは配布していませんので、適当なディレク�
 | <code>${titleKebabCase}</code> | タイトル（ケバブケース） | 
 | <code>${doi}</code> | DOI番号 | 
 
-他にも、`${aurhors[1]}`のようにしてsecond authorを取得することもできます。
+他にも、`${authors[1]}`のようにしてsecond authorを取得することもできます。
 ソースコードのBibTeXUtils.jsを参照してください。
 
 ## Roadmap/Will be implemented
