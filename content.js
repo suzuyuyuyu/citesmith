@@ -5,7 +5,7 @@ console.log('Load content script');
  * @param {string} whichSite
  * @returns {HTMLElement} downloadButton
  */
-function createDownloadButtonTag(whichSite) {
+function createDownloadButtonElement(whichSite) {
   // Create a download button element
   // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // create download button element
@@ -75,7 +75,7 @@ function createDownloadButtonTag(whichSite) {
  * @param {string} whichSite - A string indicating which site the script is running on. Currently only supports 'sciencedirect' and 'springer'.
  * @returns {boolean} - Returns true if the button was successfully added, false otherwise.
  */
-function addButtonToDom(whichSite) {
+function addButtonToDom(whichSite, downloadButton) {
   if (document.getElementById('custom-download-button')) {
     return;
   }
@@ -113,7 +113,7 @@ function addButtonToDom(whichSite) {
 function createDownloadButton(whichSite) {
   console.log(new Date().toLocaleString());
 
-  var downloadButton = createDownloadButtonTag(whichSite);
+  var downloadButton = createDownloadButtonElement(whichSite);
 
   // button click event
   downloadButton.addEventListener('click', async () => {
@@ -157,21 +157,27 @@ function createDownloadButton(whichSite) {
           });
         });
 
-        // Download PDF
+        // Generate filename
         const downloadName = extractInfoFromBibTeX(bibTeX, filenameFormat);
 
         console.log(`Using format: ${filenameFormat}`);
         console.log(`Generated filename: ${downloadName}.pdf`);
 
-        // execute download
-        const downloadLink = document.createElement('a');
-        downloadLink.href = pdfUrl;
-        downloadLink.download = `${downloadName}.pdf`;
-        downloadLink.style.display = 'none';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-
+        // For ScienceDirect, open PDF in new tab
+        if (whichSite === 'sciencedirect') {
+          // Open PDF in new tab
+          window.open(pdfUrl, '_blank');
+          await navigator.clipboard.writeText(`${downloadName}`);
+        } else {
+          // For other sites, continue using the regular download method
+          const downloadLink = document.createElement('a');
+          downloadLink.href = pdfUrl;
+          downloadLink.download = `${downloadName}.pdf`;
+          downloadLink.style.display = 'none';
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+        }
       } else {
         if (!pdfUrl && !bibTeX) {
           alert('PDF URL and BibTeX not found');
@@ -188,13 +194,13 @@ function createDownloadButton(whichSite) {
   });
 
   // note: This might be unnecessary...
-  if (!addButtonToDom(whichSite)) {
+  if (!addButtonToDom(whichSite, downloadButton)) {
     console.log('Button not added immediately, creating fallback button');
     // Use MutationObserver to monitor DOM changes and insert the button at the right time
     const observer = new MutationObserver((mutations, obs) => {
       // Only attempt to add when the button doesn't exist
       if (!document.getElementById('custom-download-button')) {
-        if (addButtonToDom(whichSite)) {
+        if (addButtonToDom(whichSite, downloadButton)) {
           console.log('Button added via MutationObserver');
           // Remove fallback button if it exists
           const fallback = document.getElementById('custom-download-fallback');
@@ -212,7 +218,7 @@ function createDownloadButton(whichSite) {
 
     // Retry after a certain time (for delayed loading on SPA sites)
     setTimeout(() => {
-      if (addButtonToDom(whichSite)) {
+      if (addButtonToDom(whichSite, downloadButton)) {
         // If the button was successfully added, remove the fallback button
         const fallback = document.getElementById('custom-download-fallback');
         if (fallback) fallback.remove();
@@ -229,7 +235,7 @@ function createDownloadButton(whichSite) {
     // Only attempt to add when the button doesn't exist
     if (!document.getElementById('custom-download-button')) {
       console.log('Button not found, trying to add again');
-      if (addButtonToDom(whichSite)) {
+      if (addButtonToDom(whichSite, downloadButton)) {
         console.log('Button re-added via MutationObserver');
       }
     }
