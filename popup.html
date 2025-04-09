@@ -3,16 +3,39 @@
 
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  <title>Citesmith 設定</title>
   <script src="./bibTeXUtils.js"></script>
+  <link rel="stylesheet" href="./style/popup.css">
 </head>
 
 <body>
   <header>
+    <h1>
+      <img src="./assets/svg/logo.svg" alt="Citesmith"> settings
+    </h1>
   </header>
-  This is a popup window for the BibTeX utility.
+
+  <main>
+    <div class="settings-area">
+      <div class="form-group">
+        <label for="filenameFormat">Filename format:</label>
+        <input type="text" id="filenameFormat" placeholder="${firstAuthorLastNameCaps}${year}-${titleSnakeCase}">
+      </div>
+
+      <div class="save-group">
+        <button id="saveButton">Save</button>
+        <div id="statusMessage" class="status">Saved</div>
+      </div>
+
+    </div>
+  </main>
+
   <footer>
+    <img src="./assets/svg/icon-logo.svg" alt="Citesmith" class="footer-logo">
+    <p class="help-text">© 2025 Citesmith</p>
   </footer>
+
+  <script src="./script/popup.js"></script>
 </body>
 
 </html>

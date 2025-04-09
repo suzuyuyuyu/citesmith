@@ -6,7 +6,8 @@
   "permissions": [
     "activeTab",
     "downloads",
-    "clipboardWrite"
+    "clipboardWrite",
+    "storage"
   ],
   "host_permissions": [
     "https://www.sciencedirect.com/*",

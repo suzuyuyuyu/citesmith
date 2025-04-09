@@ -1,8 +1,7 @@
 /**
- * この関数はRIS形式のテキストを解析し、BibTeX形式へ変換いたします。
- * 参考文献の要素を抽出し、BibTeXフォーマットに適切にマッピングします。
- * @param {string} risContent - RIS形式のテキスト
- * @returns {string} BibTeXContent BibTeX形式のテキスト
+ * This function parses text in RIS format and converts it to BibTeX format.
+ * @param {string} risContent - Text in RIS format
+ * @returns {string} BibTeXContent Text in BibTeX format
  */
 function ris2bibtex(risContent) {
   let BibTeXContent = "";
