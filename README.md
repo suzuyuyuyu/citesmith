@@ -49,7 +49,7 @@ Chromeのサイトでは配布していませんので、適当なディレク�
     - [ ] chrome.storage.sync
 - [ ] Lists of supported sites
   - [x] ScienceDirect
-  - [ ] Springer Nature
+  - [x] Springer Nature
   - [ ] Wiley Online Library
   - [ ] arXiv
 - [ ] ris to bibtex: [Issue #1](https://github.com/suzuyuyuyu/ext-download-manager/issues/1)
