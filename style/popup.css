@@ -20,17 +20,16 @@ body {
     flex-direction: column;
 }
 
-/* ヘッダーの背景を黒系にして余白を追加 */
+/* Add black background and margins to the header */
 header {
     background-color: #212121;
-    /* 黒系の背景色 */
     padding: 15px;
     text-align: center;
     border-radius: 4px;
     margin-bottom: 15px;
 }
 
-/* h1タグをフレックスボックスとして設定し、中央揃え */
+/* Configure h1 tag as flexbox with center alignment */
 header h1 {
     font-size: 17px;
     display: flex;
@@ -39,7 +38,7 @@ header h1 {
     color: white;
 }
 
-/* SVGイメージのサイズ調整 */
+/* Adjust SVG image size */
 header h1 img {
     height: 0.8em;
     width: auto;
@@ -49,15 +48,10 @@ header h1 img {
     filter: brightness(0) invert(1);
 }
 
-/* SVGイメージを65%幅で中央揃え */
+/* Center SVG image */
 header img {
-    /* 画面の65%幅 */
-    height: auto;
-    /* アスペクト比を維持 */
     display: block;
-    /* ブロック要素として扱う */
     margin: 0 auto;
-    /* 左右のマージンを自動で中央揃え */
 }
 
 .form-group {
@@ -133,9 +127,6 @@ button#saveButton:hover {
     margin-bottom: 5px;
 }
 
-
-
-/* main */
 main {
     flex: 1;
     overflow: hidden;
@@ -145,11 +136,10 @@ main {
 .settings-area {
     height: 100%;
     overflow-y: auto;
-    /* 設定エリアのみスクロール可能 */
+    /* Allow scrolling only in settings area */
     padding: 15px 0;
 }
 
-/* footer */
 footer {
     background-color: #f0f0f0;
     padding: 10px 15px;
