@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citesmith 再構築計画</title>
+<style>
+  :root {
+    --gray1: #fcfcfc; --gray3: #f0f0f0; --gray6: #d9d9d9; --gray11: #646464; --gray12: #202020;
+    --blue3: #e6f4fe; --blue11: #0d74ce;
+    --green3: #e6f6eb; --green11: #218358;
+    --amber3: #fff7c2; --amber11: #ab6400;
+    --red3: #feebec; --red11: #ce2c31;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #fff; color: var(--gray12);
+    font: 15px/1.7 -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 48px 16px 80px; }
+  h1 { font-size: 26px; line-height: 1.3; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 48px 0 12px; }
+  h3 { font-size: 15px; margin: 24px 0 8px; }
+  p, li { margin: 0 0 8px; }
+  .sub, .note { color: var(--gray11); font-size: 13px; }
+  code { font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--gray3); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--gray1); border: 0.5px solid var(--gray6); border-radius: 8px; padding: 12px 16px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 0.5px solid var(--gray6); }
+  th { color: var(--gray11); font-weight: 600; white-space: nowrap; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 0 8px; border-radius: 999px; white-space: nowrap; }
+  .ok { background: var(--green3); color: var(--green11); }
+  .warn { background: var(--amber3); color: var(--amber11); }
+  .ng { background: var(--red3); color: var(--red11); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .box { border: 0.5px solid var(--gray6); border-radius: 12px; padding: 16px; background: #fff; }
+  .box h3 { margin-top: 0; }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+  .flow .box { flex: 1 1 200px; }
+  .flow .arrow { align-self: center; color: var(--gray11); }
+  .goal { background: var(--blue3); border-radius: 12px; padding: 16px 20px; }
+  .goal ol { margin: 0; padding-left: 20px; }
+  ol.steps > li { margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Citesmith 再構築計画</h1>
+  <p class="sub">2026-11-07 作成。決定事項は docs/decisions.md に記録する。</p>
+
+  <h2>目標</h2>
+  <div class="goal">
+    <ol>
+      <li>対応ページに Citesmith ボタンを置く</li>
+      <li>指定したファイル名で PDF をダウンロードする</li>
+      <li>BibTeX をクリップボードにコピーする</li>
+    </ol>
+  </div>
+  <p class="note">対象：ScienceDirect (Elsevier)、Springer、Nature、Wiley、arXiv</p>
+
+  <h2>調査結果：各サイトが提供している情報</h2>
+  <p>5サイトとも HTML を細かく解析する必要はない。どのサイトでも次のいずれかが使える。</p>
+  <ul>
+    <li><b><code>citation_*</code> メタタグ</b>：Google Scholar 向けの標準タグ。タイトル、著者、日付、DOI、PDF の URL が入っている。</li>
+    <li><b>サイト独自の BibTeX エクスポート</b>：各サイトの「Cite」ボタンが内部で使っている URL。</li>
+    <li><b>DOI コンテントネゴシエーション</b>：<code>https://doi.org/&lt;DOI&gt;</code> に <code>Accept: application/x-bibtex</code> を付けて取得すると BibTeX が返る（Crossref と DataCite が対応）。DOI があればサイトに関係なく使える。</li>
+  </ul>
+
+  <div class="scroll">
+  <table>
+    <thead>
+      <tr><th>サイト</th><th>識別子</th><th>BibTeX の取得元（第一候補）</th><th>PDF の URL</th><th>Node からの取得</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ScienceDirect</td>
+        <td>PII（URL 末尾）、DOI</td>
+        <td><code>/sdfe/arp/cite?pii=…&amp;format=text/x-bibtex</code><br><span class="tag ok">確認済み</span></td>
+        <td>ページ内の PDF リンク（md5 などのトークン付き）<br><span class="tag warn">手動確認が必要</span></td>
+        <td>記事ページ <span class="tag ng">403</span><br>cite API <span class="tag ok">200</span></td>
+      </tr>
+      <tr>
+        <td>Springer</td>
+        <td><code>citation_doi</code></td>
+        <td><code>citation-needed.springer.com/v2/references/&lt;DOI&gt;?format=bibtex&amp;flavour=citation</code>（CORS なしのため service worker から取得）<br><span class="tag ok">確認済み</span></td>
+        <td><code>citation_pdf_url</code>（<code>/content/pdf/&lt;DOI&gt;.pdf</code>、同一オリジン）<br><span class="tag ok">Chrome で確認</span></td>
+        <td>記事ページ <span class="tag ng">ボット判定</span><br>BibTeX <span class="tag ok">200</span></td>
+      </tr>
+      <tr>
+        <td>Nature</td>
+        <td><code>citation_doi</code></td>
+        <td>Springer と同じサービス（Springer Nature 共通）<br><span class="tag ok">確認済み</span></td>
+        <td><code>citation_pdf_url</code>（<code>…/articles/&lt;id&gt;.pdf</code>）<br><span class="tag ok">確認済み</span></td>
+        <td>記事ページ <span class="tag ok">200</span><br>BibTeX <span class="tag ok">200</span></td>
+      </tr>
+      <tr>
+        <td>Wiley</td>
+        <td><code>citation_doi</code></td>
+        <td><code>/action/downloadCitation?doi=…&amp;format=bibtex&amp;include=abs</code>（GET で可。キーと <code>doi</code> が URL 形式）<br><span class="tag ok">Chrome で確認</span></td>
+        <td><code>citation_pdf_url</code> はビューアの HTML。PDF 本体は <code>/doi/pdfdirect/&lt;DOI&gt;?download=true</code><br><span class="tag ok">Chrome で確認</span></td>
+        <td>すべて <span class="tag ng">Cloudflare で遮断</span></td>
+      </tr>
+      <tr>
+        <td>arXiv</td>
+        <td><code>citation_arxiv_id</code></td>
+        <td><code>arxiv.org/bibtex/&lt;id&gt;</code><br><span class="tag ok">確認済み</span></td>
+        <td><code>citation_pdf_url</code>（<code>arxiv.org/pdf/&lt;id&gt;</code>）<br><span class="tag ok">確認済み</span></td>
+        <td>すべて <span class="tag ok">200</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>BibTeX の取得元ごとの特徴</h3>
+  <ul>
+    <li><b>サイト独自のエクスポート</b>：アブストラクトやキーワードまで入っていて情報が多い。書式はサイトごとに違う。Springer は <code>"…"</code> で値を囲み、ScienceDirect の <code>doi</code> には <code>https://doi.org/</code> が付く。</li>
+    <li><b>doi.org</b>：書式が全サイトで共通。ただし中身は出版社が Crossref に登録した情報次第で、試した Wiley の論文ではタイトルと著者が欠けていた。そのため、サイト独自のエクスポートが使えないときの<b>予備</b>にする。</li>
+    <li><b>arXiv</b>：<code>/bibtex/&lt;id&gt;</code> の <code>year</code> は最新版の年になる（1706.03762 では 2017 ではなく 2023）。初版の年がよければ DataCite（<code>doi.org/10.48550/arXiv.&lt;id&gt;</code>）を使うか、メタタグの日付で上書きする。</li>
+    <li>Elsevier API と Springer Nature API は API キーが必要なので使わない。</li>
+  </ul>
+
+  <h2>設計方針</h2>
+  <div class="flow">
+    <div class="box">
+      <h3>content script（ページ側）</h3>
+      <p>サイトの判定、ボタンの設置、メタタグの読み取り、クリップボードへのコピー</p>
+    </div>
+    <div class="arrow">⇄</div>
+    <div class="box">
+      <h3>service worker（background）</h3>
+      <p>BibTeX の取得、ファイル名の生成、<code>chrome.downloads.download({url, filename})</code></p>
+    </div>
+  </div>
+  <ul>
+    <li><b>ファイル名はメタタグから作る。</b>著者、年、タイトルは <code>citation_*</code> から取り、BibTeX は解析せずにそのままコピーする。サイトごとに書式が違う BibTeX を正規表現で解析する必要がなくなる。メタタグがないサイトだけ、doi.org の CSL-JSON（構造化済みの JSON）で補う。</li>
+    <li><b>ダウンロードは <code>chrome.downloads</code> で行う。</b>今の <code>&lt;a download&gt;</code> では、別ドメインの PDF（ScienceDirect など）でファイル名の指定が無視される。<code>downloads</code> 権限はすでに宣言済み。</li>
+    <li><b>サイトごとの差は小さなアダプタにまとめる。</b>各サイトの処理は「識別子、BibTeX の URL、PDF の URL、ボタンの置き場所」を返すだけにし、残りの処理は全サイトで共通にする。</li>
+    <li>ファイル名に使えない文字（<code>/ \ : * ? " &lt; &gt; |</code>）は除去する。</li>
+  </ul>
+
+  <h2>Node を使ったデバッグ環境</h2>
+  <p>有効です。ただし使い道を分けます。</p>
+  <div class="grid">
+    <div class="box">
+      <h3><span class="tag ok">向いている</span></h3>
+      <ul>
+        <li>BibTeX の取得元（API）を直接たたく確認：arXiv、Nature、Springer の BibTeX、ScienceDirect の cite API、doi.org</li>
+        <li>ファイル名テンプレートや文字の除去など、純粋なロジックのテスト（<code>node --test</code>、追加の依存なし）</li>
+        <li>ブラウザで保存した HTML を使ったメタタグ抽出のテスト</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3><span class="tag ng">向いていない</span></h3>
+      <ul>
+        <li>ScienceDirect、Springer、Wiley の記事ページそのもの（403 やボット判定で取得できない）</li>
+        <li>ログインや機関認証が必要な PDF の取得</li>
+        <li>ボタンの見た目やクリック動作</li>
+      </ul>
+      <p class="note">これらは Chrome に読み込んで確認する。</p>
+    </div>
+  </div>
+  <p>ロジックを ES モジュールにしておくと、service worker（<code>"type": "module"</code>）と Node の両方から同じコードを使える。構成案：</p>
+<pre><code>src/
+  sites/       サイトごとのアダプタ
+  filename.js  テンプレート展開、文字の除去
+  background.js
+  content.js
+test/          node --test
+  fixtures/    ブラウザで保存した HTML
+scripts/
+  probe.mjs    各サイトの API を実際にたたいて結果を表示する</code></pre>
+
+  <h2>実装の順番</h2>
+  <ol class="steps">
+    <li><b>土台</b>：ディレクトリ構成、<code>node --test</code>、<code>scripts/probe.mjs</code>、ファイル名生成。既存のバグ（ボタンが置けない、Wiley/arXiv で TypeError）はこの段階で消える。</li>
+    <li><b>arXiv と Nature</b>：Node だけで BibTeX の取得まで確認できる2サイトで、ボタン、ダウンロード、コピーの一連の流れを先に完成させる。</li>
+    <li><b>ScienceDirect と Springer</b>：アダプタを追加する。ScienceDirect は PDF の URL の取り方をブラウザで確認する。</li>
+    <li><b>Wiley</b>：Cloudflare があるので、すべてブラウザで確認する。</li>
+    <li><b>追加機能</b>（下の候補から選ぶ）</li>
+  </ol>
+
+  <h2>追加機能の候補</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>機能</th><th>内容</th><th>手間</th></tr></thead>
+    <tbody>
+      <tr><td>引用キーの統一</td><td>BibTeX のキー（<code>SUGAI2024116771</code>、<code>Harris2020</code> など）を、ファイル名と同じテンプレートで揃える</td><td><span class="tag ok">小</span></td></tr>
+      <tr><td>保存先フォルダ</td><td><code>Downloads/papers/</code> のように、ダウンロードフォルダ内のサブフォルダに保存する</td><td><span class="tag ok">小</span></td></tr>
+      <tr><td>ショートカットキー</td><td>ボタンを押さずにキー操作で実行する（<code>chrome.commands</code>）。ボタンが置けないページの予備にもなる</td><td><span class="tag ok">小</span></td></tr>
+      <tr><td>完了通知</td><td>コピーとダウンロードが終わったことを、ページ上に小さく表示する</td><td><span class="tag ok">小</span></td></tr>
+      <tr><td>BibTeX の整形</td><td>abstract を入れるかどうか、<code>doi</code> の正規化、フィールドを揃える</td><td><span class="tag warn">中</span></td></tr>
+      <tr><td>arXiv の出版版</td><td>arXiv 論文に出版版の DOI があれば、そちらの BibTeX を使う</td><td><span class="tag warn">中</span></td></tr>
+      <tr><td>他サイトへの拡張</td><td><code>citation_*</code> と DOI だけで処理する汎用アダプタ。IEEE、ACS、APS などの多くで動く見込み</td><td><span class="tag warn">中</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Chrome での調査結果（2026-11-07）</h2>
+  <p>一時プロファイルの Chrome を DevTools Protocol で操作して調べた。</p>
+  <ul>
+    <li><b>Springer</b>：サーバー側で描画済み。<code>citation_author</code> は「姓, 名」。ボタンの置き場所は <code>.app-article-masthead__buttons</code>（<code>a.c-pdf-download__link</code> は2つあり、2つ目は追従バー）。</li>
+    <li><b>Wiley</b>：ウィンドウを表示した Chrome なら Cloudflare を通過できる。<code>citation_author</code> は「名 姓」。ボタンの置き場所は <code>nav.coolBar .coolBar__second</code>。</li>
+    <li><b>ScienceDirect</b>：自動操作の Chrome では記事ページが 403 になる。メタタグ、PDF の URL、ボタンの置き場所は、普段使いの Chrome で1本手動で確認する必要がある。cite API は取得できた。</li>
+  </ul>
+
+  <h2>まだ確認が必要なこと</h2>
+  <ul>
+    <li>ScienceDirect の記事ページのメタタグ、PDF の直接 URL、ボタンの置き場所（手動）</li>
+    <li><code>chrome.downloads</code> で取得するとき、機関認証の Cookie が付くか（ScienceDirect、Wiley）</li>
+    <li>BibTeX の取得に時間がかかっても、クリップボードへのコピーが成功するか（Chrome はクリック直後の数秒しかコピーを許可しない）</li>
+  </ul>
+</main>
+</body>
+</html>

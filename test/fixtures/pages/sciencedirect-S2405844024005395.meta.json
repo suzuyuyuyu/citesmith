@@ -1,0 +1,26 @@
+{
+  "_note": "Captured by hand in a normal Chrome (2026-11-07). citation_title was cut at 150 chars by the capture snippet. The page has no citation_author and no citation_pdf_url. pdfLinks: the first is the article's own PDF button (inside .content-actions); the rest are reference-list links to other articles.",
+  "url": "https://www.sciencedirect.com/science/article/pii/S2405844024005395",
+  "meta": {
+    "dc.identifier": ["10.1016/j.heliyon.2024.e24508"],
+    "citation_pii": ["S2405844024005395"],
+    "citation_id": ["e24508"],
+    "citation_issn": ["2405-8440"],
+    "citation_volume": ["10"],
+    "citation_issue": ["2"],
+    "citation_doi": ["10.1016/j.heliyon.2024.e24508"],
+    "citation_publisher": ["Elsevier"],
+    "citation_firstpage": ["e24508"],
+    "citation_title": ["Obesity and diabetes mellitus are associated with SARS-CoV-2 outcomes without influencing signature genes of extrapulmonary immune compartments at the"],
+    "citation_fulltext_world_readable": [""],
+    "citation_journal_title": ["Heliyon"],
+    "citation_type": ["JOUR"],
+    "citation_article_type": ["Full-length article"],
+    "citation_publication_date": ["2024/01/30"],
+    "citation_online_date": ["2024/01/14"]
+  },
+  "pdfLinks": [
+    ["https://www.sciencedirect.com/science/article/pii/S2405844024005395/pdfft?md5=669143159f16bdd57088395a3465f60a&pid=1-s2.0-S2405844024005395-main.pdf", "link-button accessbar-utility-component accessbar-utility-link link-button-primary link-button-icon-left", "content-actions arp-display-flex-from-md"],
+    ["https://www.sciencedirect.com/science/article/pii/S1043466621001034/pdfft?md5=3fc031b6280a3c6b4fb250d59444ed2b&pid=1-s2.0-S1043466621001034-main.pdf", "anchor pdf link anchor-primary anchor-icon-left anchor-with-icon", "ReferenceLinks u-font-sans"]
+  ]
+}

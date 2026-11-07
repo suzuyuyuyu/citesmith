@@ -1,65 +1,37 @@
-const label = document.querySelector('label[for="filenameFormat"]');
-if (label) {
-  label.title = '論文をダウンロードする際に使用するファイル名のフォーマットを設定します。';
+import { defaults } from '../src/template.js';
+
+const form = document.querySelector('form');
+const status = document.getElementById('statusMessage');
+let timer;
+function show(message) {
+  clearTimeout(timer);
+  status.textContent = message;
+  timer = setTimeout(() => { status.textContent = ''; }, 2000);
 }
 
-/**
- * popup.js
- * - load the saved settings when the popup is opened
- * - save the settings when the save button is clicked
- * - settings are saved in chrome.storage.sync
- */
+try {
+  const settings = await chrome.storage.sync.get(defaults);
+  for (const [key, value] of Object.entries(settings)) {
+    const input = form.elements.namedItem(key);
+    if (input.type === 'checkbox') input.checked = value;
+    else input.value = value;
+  }
+} catch (error) {
+  show(`読み込み失敗: ${error.message}`);
+}
 
-document.addEventListener('DOMContentLoaded', function () {
-  const filenameFormatInput = document.getElementById('filenameFormat');
-  const saveButton = document.getElementById('saveButton');
-  const statusMessage = document.getElementById('statusMessage');
-
-  // read the saved settings in chrome.storage.sync
-  chrome.storage.sync.get(['filenameFormat'], function (result) {
-    if (result.filenameFormat) {
-      filenameFormatInput.value = result.filenameFormat;
-    } else {
-      filenameFormatInput.value = '${firstAuthorLastNameCaps}${year}-${titleSnakeCase}';
-    }
-  });
-
-  // save button click event
-  saveButton.addEventListener('click', function () {
-    const filenameFormat = filenameFormatInput.value;
-
-    // default value handling
-    if (!filenameFormat.trim()) {
-      filenameFormatInput.value = '${firstAuthorLastNameCaps}${year}-${titleSnakeCase}';
-    }
-
-    // save the setting
-    chrome.storage.sync.set({
-      filenameFormat: filenameFormatInput.value
-    }, function () {
-      // show the status message
-      statusMessage.style.display = 'block';
-
-      chrome.storage.sync.get(['messageDuration'], function(result) {
-        const duration = result.messageDuration || 1000;
-
-        setTimeout(function () {
-          statusMessage.classList.add('fade');
-
-          statusMessage.addEventListener('transitionend', function handler() {
-            statusMessage.style.display = 'none';
-            statusMessage.classList.remove('fade');
-            statusMessage.removeEventListener('transitionend', handler);
-          });
-        }, duration);
-      });
-    });
-  });
-});
-
-// Enter key event for the filename format input
-document.getElementById('filenameFormat').addEventListener('keypress', function (e) {
-  if (e.key === 'Enter') {
-    document.getElementById('saveButton').click();
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const settings = {};
+  for (const [key, fallback] of Object.entries(defaults)) {
+    const input = form.elements.namedItem(key);
+    settings[key] = input.type === 'checkbox' ? input.checked : input.value.trim() || fallback;
+    if (input.type !== 'checkbox') input.value = settings[key];
+  }
+  try {
+    await chrome.storage.sync.set(settings);
+    show('保存しました');
+  } catch (error) {
+    show(`保存失敗: ${error.message}`);
   }
 });

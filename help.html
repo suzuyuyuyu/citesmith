@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Citesmith 書式</title>
+  <link rel="stylesheet" href="./style/help.css">
+</head>
+<body>
+  <main>
+    <h1><img src="./assets/svg/icon-logo.svg" alt="Citesmith"></h1>
+    <section>
+      <h2>書き方</h2>
+      <p><code>${名前}</code> の形で書くと、論文の情報に置き換わります。それ以外の文字はそのまま残ります。不明な名前はエラーになり、情報がない項目は空になります。</p>
+      <p>ファイル名、保存先フォルダ、引用キーで共通です。例は Harris et al., “Array programming with NumPy”, <i>Nature</i> (2020) の場合です。</p>
+    </section>
+    <section>
+      <h2>プレースホルダー</h2>
+      <table>
+        <thead><tr><th>名前</th><th>内容</th><th>例</th></tr></thead>
+        <tbody id="placeholders"></tbody>
+      </table>
+    </section>
+    <section>
+      <h2>書式の例</h2>
+      <table>
+        <thead><tr><th>書式</th><th>結果</th></tr></thead>
+        <tbody id="examples"></tbody>
+      </table>
+    </section>
+    <section>
+      <h2>変換のルール</h2>
+      <ul>
+        <li>ファイル名は OS で使えない文字を除き、<code>.pdf</code> を付けます。長すぎる場合は切り詰めます。同名のファイルがあれば連番が付きます。</li>
+        <li>保存先フォルダは Chrome のダウンロードフォルダ内のサブフォルダです。<code>/</code> で階層を分けます。空欄なら直下に保存します。</li>
+        <li>引用キーはアクセントを除き、英数字と <code>_ : . -</code> だけを残します。</li>
+        <li>arXiv の <code>year</code> は初版の年です。</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./script/help.js"></script>
+</body>
+</html>
