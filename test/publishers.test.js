@@ -58,8 +58,8 @@ for (const fixture of fixtures) {
     }
     assert.throws(() => fromMeta(meta, url.replace('https:', 'http:')), /URL/);
     assert.throws(() => fromMeta({ ...meta, citation_doi: ['invalid'] }, url), /DOI/);
-    assert.throws(() => fromMeta({ ...meta, citation_author: [] }, url), /不足/);
-    assert.throws(() => fromMeta({ ...meta, citation_publication_date: [] }, url), /不足/);
+    assert.throws(() => fromMeta({ ...meta, citation_author: [] }, url), /Missing/);
+    assert.throws(() => fromMeta({ ...meta, citation_publication_date: [] }, url), /Missing/);
   });
 
   if (fixture.bib) {

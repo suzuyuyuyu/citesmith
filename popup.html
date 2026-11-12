@@ -1,31 +1,35 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Citesmith 設定</title>
+  <title data-i18n="popupTitle">Citesmith settings</title>
   <link rel="stylesheet" href="./style/popup.css">
 </head>
 <body>
-  <header><h1><img src="./assets/svg/logo.svg" alt="Citesmith"> settings</h1></header>
+  <header><h1><img src="./assets/svg/logo.svg" alt="Citesmith"> <span data-i18n="settings">settings</span></h1></header>
   <main>
     <form class="settings-area">
       <div class="form-group">
-        <label for="filenameFormat">ファイル名の書式</label>
+        <label for="language" data-i18n="language">Language</label>
+        <select id="language" name="language"><option value="en">English</option><option value="ja">日本語</option></select>
+      </div>
+      <div class="form-group">
+        <label for="filenameFormat"><span data-i18n="filenameFormat">Filename format</span></label>
         <input type="text" id="filenameFormat" name="filenameFormat" spellcheck="false">
       </div>
       <div class="form-group">
-        <label for="downloadFolder">保存先フォルダ（ダウンロードフォルダ内、空欄でそのまま）</label>
+        <label for="downloadFolder"><span data-i18n="downloadFolder">Download subfolder (leave blank for the download folder)</span></label>
         <input type="text" id="downloadFolder" name="downloadFolder" spellcheck="false" placeholder="papers/${journal}">
       </div>
       <div class="form-group">
-        <label for="citationKeyFormat">引用キーの書式</label>
+        <label for="citationKeyFormat"><span data-i18n="citationKeyFormat">Citation key format</span></label>
         <input type="text" id="citationKeyFormat" name="citationKeyFormat" spellcheck="false">
       </div>
-      <a class="help-link" href="./help.html" target="_blank">書式のプレースホルダー一覧</a>
-      <label class="checkbox"><input type="checkbox" name="downloadPdf" checked>PDF をダウンロード</label>
-      <label class="checkbox"><input type="checkbox" name="copyBibtex" checked>BibTeX をコピー</label>
+      <a class="help-link" href="./help.html" target="_blank"><span data-i18n="placeholdersLink">Available placeholders</span></a>
+      <label class="checkbox"><input type="checkbox" name="downloadPdf" checked><span data-i18n="downloadPdf">Download PDF</span></label>
+      <label class="checkbox"><input type="checkbox" name="copyBibtex" checked><span data-i18n="copyBibtex">Copy BibTeX</span></label>
       <div class="save-group">
-        <button id="saveButton" type="submit">保存</button>
+        <button id="saveButton" type="submit"><span data-i18n="save">Save</span></button>
         <div id="statusMessage" class="status" role="status"></div>
       </div>
     </form>

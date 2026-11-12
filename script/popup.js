@@ -1,23 +1,37 @@
 import { defaults } from '../src/template.js';
+import { messages, message } from '../src/i18n.js';
 
 const form = document.querySelector('form');
 const status = document.getElementById('statusMessage');
 let timer;
-function show(message) {
-  clearTimeout(timer);
-  status.textContent = message;
-  timer = setTimeout(() => { status.textContent = ''; }, 2000);
+let statusCode;
+let statusParams;
+const language = () => form.elements.namedItem('language').value === 'ja' ? 'ja' : 'en';
+function render() {
+  document.documentElement.lang = language();
+  for (const element of document.querySelectorAll('[data-i18n]')) element.textContent = messages[language()][element.dataset.i18n];
+  if (statusCode) status.textContent = message(statusCode, language(), statusParams);
 }
+function show(code, params) {
+  clearTimeout(timer);
+  statusCode = code;
+  statusParams = params;
+  render();
+  timer = setTimeout(() => { status.textContent = ''; statusCode = ''; }, 2000);
+}
+form.elements.namedItem('language').addEventListener('change', render);
+render();
 
 try {
   const settings = await chrome.storage.sync.get(defaults);
   for (const [key, value] of Object.entries(settings)) {
     const input = form.elements.namedItem(key);
     if (input.type === 'checkbox') input.checked = value;
-    else input.value = value;
+    else input.value = key === 'language' && value !== 'ja' ? 'en' : value;
   }
+  render();
 } catch (error) {
-  show(`読み込み失敗: ${error.message}`);
+  show('loadFailed', { message: error.message });
 }
 
 form.addEventListener('submit', async (event) => {
@@ -30,8 +44,8 @@ form.addEventListener('submit', async (event) => {
   }
   try {
     await chrome.storage.sync.set(settings);
-    show('保存しました');
+    show('saved');
   } catch (error) {
-    show(`保存失敗: ${error.message}`);
+    show('saveFailed', { message: error.message });
   }
 });

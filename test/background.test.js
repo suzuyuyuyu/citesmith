@@ -114,6 +114,28 @@ test('worker honors both toggles, validates sender and preserves partial success
         assert.equal(downloads.length, 0);
       }
     });
+    settings = { downloadPdf: true, copyBibtex: true };
+    downloads = []; requests = [];
+    globalThis.fetch = async (requested) => { requests.push(requested); return new Response('@misc{old,\n year={2023},\n title={Example}\n}'); };
+    const onlyBibtex = await new Promise((resolve) => listener({ meta, url, actions: { downloadPdf: false, copyBibtex: true } }, { url, tab: { id: 1 } }, resolve));
+    assert.ok(onlyBibtex.bibtex);
+    assert.equal(downloads.length, 0);
+    settings = { downloadPdf: false, copyBibtex: false };
+    const onlyPdf = await new Promise((resolve) => listener({ meta, url, actions: { downloadPdf: true, copyBibtex: false } }, { url, tab: { id: 1 } }, resolve));
+    assert.equal(onlyPdf.bibtex, undefined);
+    assert.equal(downloads.length, 1);
+    await t.test('errors use saved Japanese or default English and preserve prefixes', async () => {
+      for (const language of [undefined, 'ja']) {
+        settings = { downloadPdf: true, copyBibtex: true, ...(language && { language }), filenameFormat: '${typo}' };
+        globalThis.fetch = async () => new Response('invalid');
+        const result = await send();
+        assert.deepEqual(result.errors, language === 'ja' ? ['BibTeX: BibTeX の応答が不正です', 'PDF: 不明なプレースホルダー: typo'] : ['BibTeX: Invalid BibTeX response', 'PDF: Unknown placeholder: typo']);
+        const invalid = await send({ url });
+        assert.deepEqual(invalid.errors, [language === 'ja' ? '送信元が不正です' : 'Invalid sender']);
+        const metadata = await new Promise((resolve) => listener({ meta: { ...meta, citation_title: [] }, url }, { url, tab: { id: 1 } }, resolve));
+        assert.deepEqual(metadata.errors, [language === 'ja' ? 'タイトル・著者・年のメタ情報が不足しています' : 'Missing title, author or year metadata']);
+      }
+    });
     settings = defaults;
     downloads = [];
     globalThis.fetch = async () => new Response('bad', { status: 503 });
@@ -125,8 +147,8 @@ test('worker honors both toggles, validates sender and preserves partial success
     result = await send();
     assert.match(result.errors[0], /download failed/);
     assert.ok(result.bibtex);
-    assert.match((await send({ url: 'https://evil.example/', tab: { id: 1 } })).errors[0], /送信元/);
-    assert.match((await send({ url })).errors[0], /送信元/);
+    assert.match((await send({ url: 'https://evil.example/', tab: { id: 1 } })).errors[0], /Invalid sender/);
+    assert.match((await send({ url })).errors[0], /Invalid sender/);
   } finally {
     globalThis.fetch = originalFetch;
     delete globalThis.chrome;

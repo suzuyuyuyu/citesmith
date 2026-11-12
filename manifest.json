@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Citesmith",
-  "version": "2026.1.0",
+  "version": "2026.2.0",
   "description": "Enables more efficient downloading/managing PDF references and picking BibTeX references from various sites.",
   "permissions": [
     "downloads",

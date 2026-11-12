@@ -1,4 +1,7 @@
+import { localizedError } from './i18n.js';
+
 export const defaults = {
+  language: 'en',
   filenameFormat: '${firstAuthorLastNameCaps}${year}-${titleSnakeCase}',
   citationKeyFormat: '${firstAuthorLastNameLower}${year}${titleFirstWord}',
   downloadPdf: true,
@@ -42,7 +45,7 @@ export function placeholders(article) {
 export function expandTemplate(format, article) {
   const values = placeholders(article);
   return format.replace(/\$\{([^}]+)\}/g, (_, key) => {
-    if (!Object.hasOwn(values, key)) throw new Error(`不明なプレースホルダー: ${key}`);
+    if (!Object.hasOwn(values, key)) throw localizedError('unknownPlaceholder', { key });
     return values[key];
   });
 }
@@ -78,12 +81,12 @@ export function protectTitleCase(bibtex) {
 
 export function rewriteBibtex(bibtex, article, format = defaults.citationKeyFormat) {
   const entry = /^(\s*@\w+\s*[{(]\s*)[^,\s]+(?=\s*,)/;
-  if (!entry.test(bibtex)) throw new Error('BibTeX の応答が不正です');
+  if (!entry.test(bibtex)) throw localizedError('invalidBibtex');
   const key = sanitizeCitationKey(expandTemplate(format, article));
   let result = protectTitleCase(bibtex.replace(entry, (_, prefix) => prefix + key));
   if (article.arxivId) {
     const year = /(^[ \t]*year\s*=\s*(?:[{"]\s*)?)\d{4}(?=\s*[,}"])/im;
-    if (!year.test(result)) throw new Error('arXiv BibTeX の year が見つかりません');
+    if (!year.test(result)) throw localizedError('missingArxivYear');
     result = result.replace(year, (_, prefix) => `${prefix}${article.year}`);
   }
   return result.trim();

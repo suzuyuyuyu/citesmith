@@ -62,8 +62,8 @@ try {
     let label;
     for (let t = 0; t < 40; t++) {
       await sleep(250);
-      label = await ev(`(() => { const b = document.getElementById('citesmith-button'); return b.textContent.trim() + (b.title ? ' | ' + b.title : ''); })()`);
-      if (!label.startsWith('処理中') && t > 1) break;
+      label = await ev(`(() => { const b = document.getElementById('citesmith-button'); return b.querySelector('.cs-label').textContent.trim() + (b.title ? ' | ' + b.title : ''); })()`);
+      if (!label.startsWith('Working') && t > 1) break;
     }
     console.log('label after click:', label);
     const clip = await ev(`navigator.clipboard.readText().catch(e => 'readText failed: ' + e.message)`);

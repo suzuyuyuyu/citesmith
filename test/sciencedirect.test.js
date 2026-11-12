@@ -40,9 +40,9 @@ test('ScienceDirect rejects mismatched PII, foreign or incorrect PDF URLs and mi
   assert.throws(() => fromMeta(meta, `${fixture.url}/pdfft`), /URL/);
   assert.throws(() => fromMeta({ ...meta, citation_pii: ['OTHER'] }, fixture.url), /PII/);
   for (const field of ['citation_title', 'citation_publication_date']) {
-    assert.throws(() => fromMeta({ ...meta, [field]: [] }, fixture.url), /不足/);
+    assert.throws(() => fromMeta({ ...meta, [field]: [] }, fixture.url), /Missing/);
   }
   for (const invalid of ['<html>Error</html>', '@article{k,\nauthor = {}\n}', '@article{k,\nauthor = { and }\n}']) {
-    assert.throws(() => authorsFromBibtex(invalid), /著者/);
+    assert.throws(() => authorsFromBibtex(invalid), /author/);
   }
 });

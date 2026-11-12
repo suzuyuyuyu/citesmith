@@ -1,40 +1,40 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Citesmith 書式</title>
+  <title data-i18n="help0">Citesmith formats</title>
   <link rel="stylesheet" href="./style/help.css">
 </head>
 <body>
   <main>
     <h1><img src="./assets/svg/icon-logo.svg" alt="Citesmith"></h1>
     <section>
-      <h2>書き方</h2>
-      <p><code>${名前}</code> の形で書くと、論文の情報に置き換わります。それ以外の文字はそのまま残ります。不明な名前はエラーになり、情報がない項目は空になります。</p>
-      <p>ファイル名、保存先フォルダ、引用キーで共通です。例は Harris et al., “Array programming with NumPy”, <i>Nature</i> (2020) の場合です。</p>
+      <h2 data-i18n="help1">Writing templates</h2>
+      <p data-i18n="help2">Use <code>${name}</code> to insert article information. Other characters stay as written. Unknown names cause an error; missing information becomes empty text.</p>
+      <p data-i18n="help3">The same placeholders work in filenames, download subfolders and citation keys. Examples use Harris et al., “Array programming with NumPy”, <i>Nature</i> (2020).</p>
     </section>
     <section>
-      <h2>プレースホルダー</h2>
+      <h2 data-i18n="help4">Placeholders</h2>
       <table>
-        <thead><tr><th>名前</th><th>内容</th><th>例</th></tr></thead>
+        <thead><tr><th data-i18n="help5">Name</th><th data-i18n="help6">Description</th><th data-i18n="help7">Example</th></tr></thead>
         <tbody id="placeholders"></tbody>
       </table>
     </section>
     <section>
-      <h2>書式の例</h2>
+      <h2 data-i18n="help8">Format examples</h2>
       <table>
-        <thead><tr><th>書式</th><th>結果</th></tr></thead>
+        <thead><tr><th data-i18n="help9">Format</th><th data-i18n="help10">Result</th></tr></thead>
         <tbody id="examples"></tbody>
       </table>
     </section>
     <section>
-      <h2>変換のルール</h2>
+      <h2 data-i18n="help11">Conversion rules</h2>
       <ul>
-        <li>ファイル名は OS で使えない文字を除き、<code>.pdf</code> を付けます。長すぎる場合は切り詰めます。同名のファイルがあれば連番が付きます。</li>
-        <li>保存先フォルダは Chrome のダウンロードフォルダ内のサブフォルダです。<code>/</code> で階層を分けます。空欄なら直下に保存します。</li>
-        <li>引用キーはアクセントを除き、英数字と <code>_ : . -</code> だけを残します。</li>
-        <li>arXiv の <code>year</code> は初版の年です。</li>
+        <li data-i18n="help12">Filenames omit characters disallowed by the OS and end in <code>.pdf</code>. Long names are shortened. Duplicate names receive a number.</li>
+        <li data-i18n="help13">Download subfolders are inside Chrome’s download folder. Use <code>/</code> for nested folders. Leave blank to save directly in the download folder.</li>
+        <li data-i18n="help14">Citation keys remove accents and keep only letters, digits and <code>_ : . -</code>.</li>
+        <li data-i18n="help15">For arXiv, <code>year</code> is the year of the first version.</li>
       </ul>
     </section>
   </main>

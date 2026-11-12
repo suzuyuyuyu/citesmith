@@ -36,9 +36,9 @@ test('Nature adapter gets date and DOI and uses Springer citation endpoint', () 
 test('adapter routing and missing metadata fail explicitly', () => {
   assert.equal(fromMeta(arxivMeta, arxivUrl).arxivId, '1706.03762');
   assert.equal(fromMeta(natureMeta, natureUrl).journal, 'Nature');
-  assert.throws(() => fromMeta(natureMeta, 'https://example.com/articles/1'), /未対応/);
-  assert.throws(() => arxiv({ ...arxivMeta, citation_date: [] }, arxivUrl), /不足/);
-  assert.throws(() => nature({ ...natureMeta, citation_author: [] }, natureUrl), /不足/);
+  assert.throws(() => fromMeta(natureMeta, 'https://example.com/articles/1'), /Unsupported/);
+  assert.throws(() => arxiv({ ...arxivMeta, citation_date: [] }, arxivUrl), /Missing/);
+  assert.throws(() => nature({ ...natureMeta, citation_author: [] }, natureUrl), /Missing/);
   assert.throws(() => nature({ ...natureMeta, citation_doi: ['invalid'] }, natureUrl), /DOI/);
   assert.throws(() => arxiv({ ...arxivMeta, citation_arxiv_id: ['../bad'] }, arxivUrl), /ID/);
 });

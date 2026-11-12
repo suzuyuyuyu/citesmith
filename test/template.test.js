@@ -28,7 +28,7 @@ test('legacy name/title placeholders and meta fields', () => {
   assert.equal(expandTemplate('${journal}:${volume}:${number}:${publisher}:${booktitle}:${organization}', nature), 'Nature:585:7825:::');
   assert.equal(expandTemplate('${title} ${title}', nature), `${nature.title} ${nature.title}`);
   assert.match(values.author, /^Harris,/);
-  assert.throws(() => expandTemplate('${typo}', nature), /不明/);
+  assert.throws(() => expandTemplate('${typo}', nature), /Unknown/);
   assert.equal(expandTemplate('${title}', { ...nature, title: '$& $1' }), '$& $1');
 });
 
@@ -60,7 +60,7 @@ test('BibTeX changes only the key and title case protection for Nature', () => {
   const protectedBib = bib.replace('with NumPy and DNA', 'with {NumPy} and {DNA}');
   assert.equal(rewriteBibtex(bib, nature), protectedBib.replace('Harris2020', 'harris2020array').trim());
   assert.equal(rewriteBibtex(bib, nature, 'Éxample_:.-'), protectedBib.replace('Harris2020', 'Example_:.-').trim());
-  assert.throws(() => rewriteBibtex('<html>Error</html>', nature), /不正/);
+  assert.throws(() => rewriteBibtex('<html>Error</html>', nature), /Invalid/);
 });
 
 test('title protects only words with inner capitals', () => {

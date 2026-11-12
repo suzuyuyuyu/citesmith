@@ -1,14 +1,16 @@
+import { localizedError } from '../i18n.js';
+
 export const value = (meta, name) => meta[`citation_${name}`]?.[0]?.trim() || '';
 
 export function articleFromMeta(meta, url, dateName, pdf = value(meta, 'pdf_url'), requireAuthors = true) {
   const title = value(meta, 'title');
   const authors = (meta.citation_author || []).map((name) => name.trim()).filter(Boolean);
   const year = value(meta, dateName).match(/^\d{4}/)?.[0];
-  if (!title || (requireAuthors && !authors.length) || !year) throw new Error('タイトル・著者・年のメタ情報が不足しています');
+  if (!title || (requireAuthors && !authors.length) || !year) throw localizedError('missingMetadata');
   const pdfUrl = new URL(pdf, url);
   const page = new URL(url);
   if (!pdf || pdfUrl.protocol !== 'https:' || pdfUrl.origin !== page.origin) {
-    throw new Error('PDF URL が不正です');
+    throw localizedError('invalidPdfUrl');
   }
   const firstPage = value(meta, 'firstpage');
   const lastPage = value(meta, 'lastpage');

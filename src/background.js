@@ -1,3 +1,4 @@
+import { localizedError, errorMessage } from './i18n.js';
 import { fromMeta } from './sites/index.js';
 import { defaults, buildFilename, rewriteBibtex } from './template.js';
 
@@ -27,8 +28,8 @@ function downloadFromTab(article, openerTabId, filename) {
       suggest({ filename, conflictAction: 'uniquify' });
       done();
     };
-    const removed = (id) => { if (id === tabId) done(new Error('PDF のタブが閉じられました')); };
-    const timer = setTimeout(() => done(new Error('PDF が届きませんでした。開いたタブで確認してください')), 60000);
+    const removed = (id) => { if (id === tabId) done(localizedError('pdfTabClosed')); };
+    const timer = setTimeout(() => done(localizedError('pdfTimeout')), 60000);
     chrome.downloads.onDeterminingFilename.addListener(naming);
     chrome.tabs.onRemoved.addListener(removed);
     (async () => {
@@ -46,9 +47,19 @@ function downloadFromTab(article, openerTabId, filename) {
   });
 }
 
-async function run({ meta, url }, sender) {
-  if (!sender.tab || sender.url !== url) throw new Error('送信元が不正です');
+async function run({ meta, url, actions }, sender) {
   const settings = await chrome.storage.sync.get(defaults);
+  try {
+    return await runWithSettings({ meta, url, actions }, sender, settings);
+  } catch (error) {
+    return { errors: [errorMessage(error, settings.language)] };
+  }
+}
+
+async function runWithSettings({ meta, url, actions }, sender, settings) {
+  if (!sender.tab || sender.url !== url) throw localizedError('invalidSender');
+  // A choice from the button's menu applies to this click only.
+  if (actions) Object.assign(settings, { downloadPdf: actions.downloadPdf === true, copyBibtex: actions.copyBibtex === true });
   if (!settings.downloadPdf && !settings.copyBibtex) return { errors: [], inactive: true };
   const article = fromMeta(meta, url);
   const errors = [];
@@ -62,17 +73,17 @@ async function run({ meta, url }, sender) {
       if (article.authorsFromBibtex) article.authors = article.authorsFromBibtex(text);
       if (settings.copyBibtex) bibtex = rewriteBibtex(text, article, settings.citationKeyFormat);
     } catch (error) {
-      errors.push(`BibTeX: ${error.message}`);
+      errors.push(`BibTeX: ${errorMessage(error, settings.language)}`);
     }
   }
   if (settings.downloadPdf) {
     try {
-      if (article.authorsFromBibtex && !article.authors.length) throw new Error('著者情報が不足しています');
+      if (article.authorsFromBibtex && !article.authors.length) throw localizedError('missingAuthors');
       filename = buildFilename(article, settings.filenameFormat, settings.downloadFolder);
       if (article.pdfTabDomain) await downloadFromTab(article, sender.tab.id, filename);
       else await chrome.downloads.download({ url: article.pdfUrl, filename, conflictAction: 'uniquify' });
     } catch (error) {
-      errors.push(`PDF: ${error.message}`);
+      errors.push(`PDF: ${errorMessage(error, settings.language)}`);
     }
   }
   return { bibtex, filename, errors };

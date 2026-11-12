@@ -1,52 +1,54 @@
 # Citesmith
 
-arXiv の論文概要ページ、Nature・Springer（link.springer.com）・Wiley Online Library・ScienceDirect の記事ページで、Citesmith ボタンから PDF の保存と BibTeX のコピーを行う Chrome MV3 拡張です。
+English | [日本語](README-ja.md)
 
-## インストール・設定
+A Chrome (MV3) extension that adds a Citesmith button to article pages on arXiv (abstract pages), Nature, Springer (link.springer.com), Wiley Online Library and ScienceDirect. One click saves the PDF under a filename built from your template and copies the BibTeX to the clipboard.
 
-1. リポジトリを取得し、Chrome の `chrome://extensions` でデベロッパーモードを有効にする。
-2. 「パッケージ化されていない拡張機能を読み込む」でリポジトリのルートを選ぶ。
-3. 対応ページを再読み込みし、PDF リンク付近の Citesmith ボタンを押す。配置先がない場合は右下に表示する。
+## Install and settings
 
-拡張のポップアップでファイル名・引用キーの書式と「PDF をダウンロード」「BibTeX をコピー」を設定して保存します。両方とも初期値はオンです。更新後は拡張と記事ページを再読み込みしてください。
+1. Clone the repository, open `chrome://extensions` and turn on Developer mode.
+2. Click "Load unpacked" and choose the repository root.
+3. Reload a supported article page and press the Citesmith button next to the PDF link. If no place is found, the button sits at the bottom right. The ▾ on the right of the button runs a one-off choice: "PDF + BibTeX", "PDF only" or "BibTeX only".
 
-- ファイル名の初期値：`${firstAuthorLastNameCaps}${year}-${titleSnakeCase}`（`.pdf` は自動付与）
-- 引用キーの初期値：`${firstAuthorLastNameLower}${year}${titleFirstWord}`（例：`harris2020array`、`vaswani2017attention`）
-- 保存先フォルダ：ダウンロードフォルダ内のサブフォルダ（例：`papers/${journal}`）。空欄なら直下。Chrome の制約で、ダウンロードフォルダの外は指定できません。
+In the extension popup you set the display language (English or 日本語; English by default), the filename and citation key templates, the download subfolder, and whether the button downloads the PDF and/or copies the BibTeX (both on by default). Reload the extension and the article page after changing settings.
 
-## プレースホルダー
+- Default filename: `${firstAuthorLastNameCaps}${year}-${titleSnakeCase}` (`.pdf` is added)
+- Default citation key: `${firstAuthorLastNameLower}${year}${titleFirstWord}` (e.g. `harris2020array`, `vaswani2017attention`)
+- Download subfolder: a folder inside Chrome's download folder (e.g. `papers/${journal}`). Empty means the download folder itself. Chrome does not let extensions save outside the download folder.
 
-ポップアップの「書式のプレースホルダー一覧」から、例つきの一覧（`help.html`）を開けます。
+## Placeholders
 
-以下の名前を `${名前}` と書きます。情報は `citation_*` メタタグから取得し、ScienceDirect の著者は BibTeX から取得します。ない項目は空文字になります。不明な名前はエラーになります。
+The popup links to a reference page (`help.html`) that lists every placeholder with an example value.
 
-| 名前 | 内容 |
+Write a placeholder as `${name}`. Values come from the page's `citation_*` meta tags; ScienceDirect authors come from its BibTeX. Missing values become empty strings. An unknown name is an error.
+
+| Name | Value |
 | --- | --- |
-| `author` | 全著者を ` and ` で連結 |
-| `firstAuthorFullName` | 第一著者の名前 |
-| `firstAuthorFirstName` / `firstAuthorLastName` | 第一著者の名（ミドルネームを含む）／姓 |
-| `firstAuthorInitials` | 名と姓の頭文字（大文字） |
-| `firstAuthorFirstNameCaps` / `firstAuthorLastNameCaps` | 名／姓の大文字表記 |
-| `firstAuthorLastNameLower` | 姓の小文字表記 |
-| `firstAuthorFullNameCaps` | 名、姓の順に大文字で連結 |
-| `firstAuthorFullNameCapsSnake` / `firstAuthorFullNameCapsKebab` | 上記の空白を `_` ／ `-` に置換 |
-| `year` | 出版年（arXiv は初版年） |
-| `title` | タイトル |
-| `titleSnakeCase` / `titleKebabCase` | タイトルの空白を `_` ／ `-` に置換（大文字・小文字は保持） |
-| `titleCamelCase` | タイトルを lowerCamelCase に変換 |
-| `titleFirstWord` | 冠詞・前置詞などの英語の頻出語を除いた最初の ASCII 単語（アクセント除去、小文字） |
-| `doi` / `journal` | DOI／誌名 |
-| `volume` / `number` / `pages` | 巻／号／ページ範囲（`--` 区切り） |
-| `publisher` / `booktitle` / `organization` | 出版社／会議名／組織名 |
-| `url` | 記事ページ URL |
+| `author` | All authors joined with ` and ` |
+| `firstAuthorFullName` | First author's name |
+| `firstAuthorFirstName` / `firstAuthorLastName` | First author's given names (including middle names) / family name |
+| `firstAuthorInitials` | Initials of the given and family names (upper case) |
+| `firstAuthorFirstNameCaps` / `firstAuthorLastNameCaps` | Given / family name in upper case |
+| `firstAuthorLastNameLower` | Family name in lower case |
+| `firstAuthorFullNameCaps` | Given and family names in upper case |
+| `firstAuthorFullNameCapsSnake` / `firstAuthorFullNameCapsKebab` | The above with spaces replaced by `_` / `-` |
+| `year` | Publication year (arXiv: year of the first version) |
+| `title` | Title |
+| `titleSnakeCase` / `titleKebabCase` | Title with spaces replaced by `_` / `-` (case kept) |
+| `titleCamelCase` | Title in lowerCamelCase |
+| `titleFirstWord` | First ASCII word of the title, skipping common English words such as articles and prepositions (accents removed, lower case) |
+| `doi` / `journal` | DOI / journal name |
+| `volume` / `number` / `pages` | Volume / issue / page range (separated by `--`) |
+| `publisher` / `booktitle` / `organization` | Publisher / conference name / organization |
+| `url` | Article page URL |
 
-ファイル名は禁則文字・制御文字を除去し、空白をまとめ、拡張子の前を UTF-8 で180バイト以内に制限します。引用キーはアクセントを除去し、英数字と `_ : . -` のみを残します。空になった場合は `paper` を使用します。重複ファイルは Chrome が連番を付けます。
+Filenames drop characters that operating systems forbid and control characters, collapse spaces, and are limited to 180 UTF-8 bytes before the extension. Citation keys drop accents and keep only letters, digits and `_ : . -`. An empty result becomes `paper`. Chrome numbers duplicate files.
 
-BibTeX はサイトのエクスポートを使用し、引用キー、タイトルの大文字保護、arXiv の `year`（初版年に統一）を変更し、前後の空白を除去します。ボタンの「完了」は有効な操作の処理完了（PDF はダウンロード開始）を表し、転送完了は Chrome のダウンロード画面で確認できます。「エラー」の詳細はボタンにマウスを置くと表示されます。
+BibTeX comes from each site's own export. Citesmith changes only the citation key, protects capitals in the title (words such as `{NumPy}` and `{DNA}`), sets arXiv's `year` to the first version, and trims surrounding whitespace. "Done" on the button means the enabled actions finished (for the PDF, the download started); check Chrome's downloads page for the transfer itself. Hover over "Error" to see the reason.
 
-## 開発
+## Development
 
-Node.js 24。追加の npm 依存・ビルド処理は不要です。
+Node.js 24. No npm dependencies and no build step.
 
 ```sh
 npm test
@@ -55,9 +57,9 @@ node scripts/probe.mjs https://www.nature.com/articles/s41586-020-2649-2
 node scripts/e2e.mjs https://arxiv.org/abs/1706.03762 https://www.nature.com/articles/s41586-020-2649-2
 ```
 
-`src/sites/` はメタ情報のアダプタ、`src/template.js` は共通の書式処理です。
+`src/sites/` holds the per-site adapters and `src/template.js` the shared template code.
 
-- probe：ページと BibTeX を Node から取得し、生成されるファイル名と BibTeX を表示します。
-- e2e：使い捨てプロファイルの Chrome（headless）に拡張を読み込み、ボタンを押して、表示、クリップボード、保存されたファイルを確認します。保存先は `~/tmp/citesmith-e2e/`。`HEADFUL=1` を付けるとウィンドウを表示します。
+- probe: fetches the page and the BibTeX from Node and prints the resulting filename and BibTeX.
+- e2e: loads the extension into a throwaway Chrome profile (headless), presses the button and checks the label, the clipboard and the saved file. Files go to `~/tmp/citesmith-e2e/`. Set `HEADFUL=1` to show the window.
 
-Springer は `/article/<DOI>`、Wiley は `/doi/<DOI>`・`/doi/full/<DOI>`・`/doi/abs/<DOI>` に対応します。Wiley の PDF ビューアページは対象外です。ScienceDirect は `/science/article/pii/<PII>`・`/science/article/abs/pii/<PII>` に対応します。著者取得のため、BibTeX コピーがオフでも ScienceDirect の BibTeX を取得します。
+Supported paths: Springer `/article/<DOI>`; Wiley `/doi/<DOI>`, `/doi/full/<DOI>` and `/doi/abs/<DOI>` (not the PDF viewer pages); ScienceDirect `/science/article/pii/<PII>` and `/science/article/abs/pii/<PII>`. ScienceDirect's BibTeX is fetched even when copying is off, because the authors come from it.

@@ -1,3 +1,4 @@
+import { localizedError } from '../i18n.js';
 import { fromMeta as arxiv } from './arxiv.js';
 import { fromMeta as nature } from './nature.js';
 import { fromMeta as springer } from './springer.js';
@@ -11,5 +12,5 @@ export function fromMeta(meta, url) {
   if (hostname === 'link.springer.com') return springer(meta, url);
   if (hostname === 'onlinelibrary.wiley.com') return wiley(meta, url);
   if (hostname === 'www.sciencedirect.com') return sciencedirect(meta, url);
-  throw new Error('未対応のサイトです');
+  throw localizedError('unsupportedSite');
 }

@@ -7,6 +7,7 @@ main { flex: 1; padding: 0 15px; }
 .settings-area { padding: 15px 0; }
 .form-group { margin-bottom: 15px; }
 label { display: block; margin-bottom: 5px; font-weight: bold; }
+select { padding: 6px 8px; border: .5px solid #bbbbbb; border-radius: 4px; background: #fff; color: inherit; font: inherit; }
 input[type="text"] { width: 100%; padding: 8px; border: .5px solid #bbbbbb; border-radius: 4px; font: inherit; }
 .checkbox { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
 input[type="checkbox"] { accent-color: #64172b; }
